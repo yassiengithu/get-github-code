@@ -1,11 +1,13 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, useParams } from "react-router-dom";
-import { ChevronLeft, Truck, CheckCircle, Clock, MapPin, Phone, User, Package, Receipt, Copy, BadgeCheck, AlertCircle, Loader2, Wallet, Smartphone, CreditCard, ShieldCheck, RotateCcw, ExternalLink, Navigation, Route, MousePointerClick, ArrowLeftRight, Info, XCircle } from "lucide-react";
+import { ChevronLeft, Truck, CheckCircle, Clock, MapPin, Phone, User, Package, Receipt, Copy, BadgeCheck, AlertCircle, Loader2, Wallet, Smartphone, CreditCard, ShieldCheck, RotateCcw, ExternalLink, Navigation, Route, MousePointerClick, ArrowLeftRight, Info, XCircle, Upload, Image as ImageIcon, X, Hash } from "lucide-react";
 import { toast } from "sonner";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import BottomNav from "@/components/BottomNav";
 import SourceBadge from "@/components/SourceBadge";
 import { useOrders, type OrderStatus, type PaymentStatus } from "@/context/OrdersContext";
