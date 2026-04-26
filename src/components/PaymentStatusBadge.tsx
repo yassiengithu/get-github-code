@@ -32,42 +32,40 @@ const SIZE_STYLES: Record<Size, { wrap: string; icon: string; dot: string }> = {
  * Unified payment status pill used across checkout, orders list, order detail.
  * Always wraps the same `PAYMENT_STATUS_VISUALS` config so colors stay consistent.
  */
-export const PaymentStatusBadge = ({
-  status,
-  size = "md",
-  short = false,
-  hideIcon = false,
-  withDot = false,
-  className,
-}: PaymentStatusBadgeProps) => {
-  const v = PAYMENT_STATUS_VISUALS[status];
-  const sz = SIZE_STYLES[size];
-  const Icon = v.icon;
-  const label = short ? PAYMENT_STATUS_SHORT[status] : PAYMENT_STATUS_LABELS[status];
+export const PaymentStatusBadge = forwardRef<HTMLSpanElement, PaymentStatusBadgeProps>(
+  ({ status, size = "md", short = false, hideIcon = false, withDot = false, className, ...rest }, ref) => {
+    const v = PAYMENT_STATUS_VISUALS[status];
+    const sz = SIZE_STYLES[size];
+    const Icon = v.icon;
+    const label = short ? PAYMENT_STATUS_SHORT[status] : PAYMENT_STATUS_LABELS[status];
 
-  return (
-    <span
-      className={cn(
-        "inline-flex items-center font-bold whitespace-nowrap leading-none",
-        sz.wrap,
-        v.badge,
-        className,
-      )}
-      role="status"
-      aria-label={`Payment status: ${PAYMENT_STATUS_LABELS[status]}`}
-    >
-      {withDot && (
-        <span
-          className={cn("rounded-full shrink-0", sz.dot, v.dot, v.spin && "animate-pulse")}
-          aria-hidden="true"
-        />
-      )}
-      {!hideIcon && (
-        <Icon className={cn(sz.icon, "shrink-0", v.spin && "animate-spin")} aria-hidden="true" />
-      )}
-      {label}
-    </span>
-  );
-};
+    return (
+      <span
+        ref={ref}
+        className={cn(
+          "inline-flex items-center font-bold whitespace-nowrap leading-none",
+          sz.wrap,
+          v.badge,
+          className,
+        )}
+        role="status"
+        aria-label={`Payment status: ${PAYMENT_STATUS_LABELS[status]}`}
+        {...rest}
+      >
+        {withDot && (
+          <span
+            className={cn("rounded-full shrink-0", sz.dot, v.dot, v.spin && "animate-pulse")}
+            aria-hidden="true"
+          />
+        )}
+        {!hideIcon && (
+          <Icon className={cn(sz.icon, "shrink-0", v.spin && "animate-spin")} aria-hidden="true" />
+        )}
+        {label}
+      </span>
+    );
+  },
+);
+PaymentStatusBadge.displayName = "PaymentStatusBadge";
 
 export default PaymentStatusBadge;
