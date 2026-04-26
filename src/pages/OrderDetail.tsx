@@ -80,10 +80,30 @@ const OrderDetail = () => {
   const [trackingInput, setTrackingInput] = useState("");
   const [trackingError, setTrackingError] = useState("");
 
+  // Proof of payment state
+  const [proofFile, setProofFile] = useState<{ name: string; size: number; previewUrl: string } | null>(null);
+  const [referenceNumber, setReferenceNumber] = useState("");
+  const [proofPaymentMethod, setProofPaymentMethod] = useState<string>("");
+  const proofInputRef = useRef<HTMLInputElement | null>(null);
+
   useEffect(() => {
     setTrackingInput(order?.trackingNumber ?? "");
     setTrackingError("");
   }, [order?.trackingNumber]);
+
+  // Pre-fill the proof method dropdown from the order's payment method
+  useEffect(() => {
+    if (order?.payment?.id && !proofPaymentMethod) {
+      setProofPaymentMethod(order.payment.id);
+    }
+  }, [order?.payment?.id, proofPaymentMethod]);
+
+  // Cleanup the object URL when the file is replaced or component unmounts
+  useEffect(() => {
+    return () => {
+      if (proofFile?.previewUrl) URL.revokeObjectURL(proofFile.previewUrl);
+    };
+  }, [proofFile?.previewUrl]);
 
   const handleSetPaymentStatus = (next: PaymentStatus) => {
     if (!order) return;
