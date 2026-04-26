@@ -172,6 +172,49 @@ const OrderDetail = () => {
     window.open("https://example.com/pay", "_blank", "noopener,noreferrer");
   };
 
+  const handleProofSelected = (file: File | null) => {
+    if (!file) return;
+    if (!file.type.startsWith("image/")) {
+      toast.error("Please upload an image file (JPG or PNG)");
+      return;
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error("Image must be under 5 MB");
+      return;
+    }
+    if (proofFile?.previewUrl) URL.revokeObjectURL(proofFile.previewUrl);
+    setProofFile({
+      name: file.name,
+      size: file.size,
+      previewUrl: URL.createObjectURL(file),
+    });
+  };
+
+  const removeProof = () => {
+    if (proofFile?.previewUrl) URL.revokeObjectURL(proofFile.previewUrl);
+    setProofFile(null);
+    if (proofInputRef.current) proofInputRef.current.value = "";
+  };
+
+  const handleSubmitProof = () => {
+    if (!order) return;
+    if (!proofFile) {
+      toast.error("Please upload a screenshot of your payment");
+      return;
+    }
+    const ref = referenceNumber.trim();
+    if (ref.length < 4) {
+      toast.error("Enter a valid reference number");
+      return;
+    }
+    if (!proofPaymentMethod) {
+      toast.error("Select the payment method you used");
+      return;
+    }
+    updatePaymentStatus(order.id, "under_review");
+    toast.success("Proof submitted — payment under verification");
+  };
+
   return (
     <div className={`min-h-screen bg-background max-w-md mx-auto relative ${needsPayment ? "pb-44" : "pb-20"}`}>
       <header className="sticky top-0 z-40 px-4 py-4 flex items-center gap-3" style={{ background: "var(--gradient-primary)" }}>
