@@ -660,7 +660,7 @@ const OrderDetail = () => {
         })()}
 
         {/* Upload Proof of Payment — visible while order awaits/needs payment verification */}
-        {needsPayment && paymentStatus !== "paid" && (
+        {paymentMethodId !== "cod" && paymentStatus !== "paid" && (
           <Card className="p-4 space-y-4 border-2 border-warning/30">
             <div className="flex items-center gap-2">
               <div className="h-9 w-9 rounded-lg bg-warning/15 flex items-center justify-center shrink-0">
