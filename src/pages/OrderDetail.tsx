@@ -659,6 +659,156 @@ const OrderDetail = () => {
           );
         })()}
 
+        {/* Upload Proof of Payment — visible while order awaits/needs payment verification */}
+        {needsPayment && paymentStatus !== "paid" && (
+          <Card className="p-4 space-y-4 border-2 border-warning/30">
+            <div className="flex items-center gap-2">
+              <div className="h-9 w-9 rounded-lg bg-warning/15 flex items-center justify-center shrink-0">
+                <Upload className="h-4 w-4 text-warning" />
+              </div>
+              <div className="min-w-0">
+                <h2 className="text-sm font-bold text-foreground leading-tight">
+                  Upload Proof of Payment
+                </h2>
+                <p className="text-[11px] text-muted-foreground leading-snug mt-0.5">
+                  Submit your receipt so we can verify and ship your order.
+                </p>
+              </div>
+            </div>
+
+            {/* Image upload placeholder */}
+            <div className="space-y-1.5">
+              <Label className="text-[11px] uppercase tracking-wide font-bold text-foreground">
+                Receipt screenshot
+              </Label>
+              <input
+                ref={proofInputRef}
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={(e) => handleProofSelected(e.target.files?.[0] ?? null)}
+              />
+              {proofFile ? (
+                <div className="rounded-xl border-2 border-success/40 bg-success/5 p-2.5 flex items-center gap-3">
+                  <img
+                    src={proofFile.previewUrl}
+                    alt="Payment proof preview"
+                    className="h-16 w-16 rounded-lg object-cover bg-secondary shrink-0"
+                  />
+                  <div className="min-w-0 flex-1">
+                    <p className="text-xs font-semibold text-foreground truncate">
+                      {proofFile.name}
+                    </p>
+                    <p className="text-[11px] text-muted-foreground">
+                      {(proofFile.size / 1024).toFixed(0)} KB · Ready to submit
+                    </p>
+                    <button
+                      type="button"
+                      onClick={() => proofInputRef.current?.click()}
+                      className="text-[11px] font-semibold text-primary mt-1 active:opacity-70"
+                    >
+                      Replace image
+                    </button>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={removeProof}
+                    aria-label="Remove proof"
+                    className="h-8 w-8 rounded-full bg-card border border-border flex items-center justify-center text-muted-foreground active:bg-secondary shrink-0"
+                  >
+                    <X className="h-4 w-4" />
+                  </button>
+                </div>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => proofInputRef.current?.click()}
+                  className="w-full rounded-xl border-2 border-dashed border-primary/30 bg-primary/5 px-4 py-6 flex flex-col items-center justify-center gap-1.5 active:bg-primary/10 transition-colors min-h-[120px]"
+                >
+                  <div className="h-11 w-11 rounded-full bg-primary/10 flex items-center justify-center">
+                    <ImageIcon className="h-5 w-5 text-primary" />
+                  </div>
+                  <span className="text-sm font-bold text-foreground">Tap to upload screenshot</span>
+                  <span className="text-[11px] text-muted-foreground text-center px-2">
+                    JPG or PNG, up to 5 MB
+                  </span>
+                </button>
+              )}
+            </div>
+
+            {/* Reference number */}
+            <div className="space-y-1.5">
+              <Label htmlFor="proof-reference" className="text-[11px] uppercase tracking-wide font-bold text-foreground">
+                Reference number
+              </Label>
+              <div className="relative">
+                <Hash className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground pointer-events-none" />
+                <Input
+                  id="proof-reference"
+                  inputMode="text"
+                  autoComplete="off"
+                  placeholder="e.g. 1234567890"
+                  value={referenceNumber}
+                  onChange={(e) => setReferenceNumber(e.target.value)}
+                  maxLength={40}
+                  className="pl-9 h-11 text-sm"
+                />
+              </div>
+              <p className="text-[10px] text-muted-foreground leading-snug">
+                Found in your payment confirmation receipt.
+              </p>
+            </div>
+
+            {/* Payment method */}
+            <div className="space-y-1.5">
+              <Label htmlFor="proof-method" className="text-[11px] uppercase tracking-wide font-bold text-foreground">
+                Payment method
+              </Label>
+              <Select value={proofPaymentMethod} onValueChange={setProofPaymentMethod}>
+                <SelectTrigger id="proof-method" className="h-11 text-sm">
+                  <SelectValue placeholder="Select payment method" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="gcash">
+                    <span className="inline-flex items-center gap-2">
+                      <Smartphone className="h-3.5 w-3.5" /> GCash
+                    </span>
+                  </SelectItem>
+                  <SelectItem value="card">
+                    <span className="inline-flex items-center gap-2">
+                      <CreditCard className="h-3.5 w-3.5" /> Credit / Debit Card
+                    </span>
+                  </SelectItem>
+                  <SelectItem value="maya">
+                    <span className="inline-flex items-center gap-2">
+                      <Wallet className="h-3.5 w-3.5" /> Maya
+                    </span>
+                  </SelectItem>
+                  <SelectItem value="bank_transfer">
+                    <span className="inline-flex items-center gap-2">
+                      <Receipt className="h-3.5 w-3.5" /> Bank Transfer
+                    </span>
+                  </SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <Button
+              type="button"
+              size="lg"
+              onClick={handleSubmitProof}
+              disabled={paymentStatus === "under_review"}
+              className="w-full h-12 rounded-xl text-sm font-bold gap-2"
+            >
+              <ShieldCheck className="h-4 w-4" />
+              {paymentStatus === "under_review" ? "Proof submitted" : "Submit Proof of Payment"}
+            </Button>
+            <p className="text-[10px] text-muted-foreground text-center leading-snug">
+              We typically verify payments within a few minutes.
+            </p>
+          </Card>
+        )}
+
         {adminMode && (
         <Card className="p-4 space-y-3 border-2 border-dashed border-muted">
           <div className="flex items-center justify-between gap-2">
